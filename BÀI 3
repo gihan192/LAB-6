@@ -1,0 +1,21 @@
+--Bài 3/1
+create trigger trg_xoanhanthanNV on NHANVIEN
+instead of delete
+as 
+begin
+	delete from THANNHAN where MA_NVIEN in (select MANV from deleted)
+	delete from NHANVIEN where MANV in (select MANV from deleted)
+end
+
+delete NHANVIEN where MANV='023'
+
+--Bài 3/2
+create trigger trg_NVlamdean on NHANVIEN
+after insert
+as 
+begin
+	insert into PHANCONG values ((select MANV from inserted),1,1,100)
+end
+
+insert into NHANVIEN
+values (N'Trầm',N'Hương',N'Đào','024','1998-02-05',N'Hội An',N'Nữ',56000,'004',1)
