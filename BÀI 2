@@ -1,0 +1,42 @@
+--Bài 2/1
+create trigger trg_nhanvien on NHANVIEN 
+	after insert
+as
+	declare @nữ int,@nam int;
+	select @nữ = count(MANV) from NHANVIEN where PHAI = N'Nữ';
+	select @nam = count(MANV) from NHANVIEN where PHAI = N'Nam';
+
+	print N'Tổng số nhân viên là nữ: ' +cast (@nữ as varchar);
+	print N'Tổng số nhân viên là nam: ' +cast (@nam as varchar);
+
+INSERT INTO [dbo].[NHANVIEN]
+           ([HONV],[TENLOT],[TENNV],[MANV],[NGSINH],[DCHI],[PHAI],[LUONG],[MA_NQL],[PHG])
+     VALUES
+           (N'Trần',N'Thảo',N'Ly','023''1999-09-09','HCM','Nữ',50000,'001',1)
+GO
+--Bài 2/2 
+create trigger trg_capnhatgtnhanvien on NHANVIEN 
+	after update
+as
+	if (select top 1 phai from deleted) != (select top 1 phai from inserted)
+	begin
+		declare @nữ int,@nam int;
+		select @nữ = count(MANV) from NHANVIEN where PHAI = N'Nữ';
+		select @nam = count(MANV) from NHANVIEN where PHAI = N'Nam';
+
+		print N'Tổng số nhân viên là nữ: ' +cast (@nữ as varchar);
+		print N'Tổng số nhân viên là nam: ' +cast (@nam as varchar);
+	end
+
+update [dbo].[NHANVIEN]
+	set [HONV]='Tin 123',[PHAI]=N'Nữ'
+where MANV='022'
+go
+--Bài 2/3
+create trigger trg_tongdean on DEAN
+	after delete
+as
+	select MA_NVIEN, count(MADA) as 'Tổng số đề án đã tham gia' from PHANCONG
+		group by MA_NVIEN
+
+delete DEAN where MADA = 1
